@@ -81,6 +81,6 @@ TARGET_USER:=$(TARGET_USER)
 TARGET_SERVER:=$(TARGET_SERVER)
 
 ci-deploy:
-	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker stop $(SERVICE) || true && docker rm $(SERVICE) || true'
-	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker pull $(DOCKER_REPOSITORY):latest'
-	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker run -d --restart unless-stopped --name $(SERVICE) -p 443:443 $(DOCKER_REPOSITORY):latest'
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $(TARGET_USER)@$(TARGET_SERVER) 'docker stop $(SERVICE) || true && docker rm $(SERVICE) || true'
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $(TARGET_USER)@$(TARGET_SERVER) 'docker pull $(DOCKER_REPOSITORY):latest'
+	ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no $(TARGET_USER)@$(TARGET_SERVER) 'docker run -d --restart unless-stopped --name $(SERVICE) -p 443:443 $(DOCKER_REPOSITORY):latest'
