@@ -77,7 +77,10 @@ ci-docker-build: ci-docker-auth
 	docker push $(DOCKER_REPOSITORY):$(GIT_HASH)$(CIRCLE_BUILD_NUM)
 	docker push $(DOCKER_REPOSITORY):latest
 
-K8S_URL=https://elb.master.k8s.dev.uw.systems/apis/extensions/v1beta1/namespaces/$(K8S_NAMESPACE)/deployments/$(K8S_DEPLOYMENT_NAME)
-K8S_PAYLOAD={"spec":{"template":{"spec":{"containers":[{"name":"$(K8S_CONTAINER_NAME)","image":"$(DOCKER_REPOSITORY):$(GIT_HASH)$(CIRCLE_BUILD_NUM)"}]}}}}
+TARGET_USER:=$(TARGET_USER)
+TARGET_SERVER:=$(TARGET_SERVER)
 
-ci-kubernetes-push:
+ci-deploy:
+	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker stop $(SERVICE) || true && docker rm $(SERVICE) || true'
+	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker pull $(DOCKER_REPOSITORY):latest'
+	ssh $(TARGET_USER)@$(TARGET_SERVER) 'docker run -d --restart unless-stopped --name $(SERVICE) -p 443:443 $(DOCKER_REPOSITORY):latest'
